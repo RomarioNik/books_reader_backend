@@ -1,11 +1,47 @@
-import {Schema, model} from "mongoose";
+import { Schema, model } from "mongoose";
+import {handleMongeeseError} from "../helpers/index.js";
+import Joi from "joi";
 
 const contactSchema = new Schema({
-    name: String,
-    email: String,
-    phone: String,
-})
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  phone: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+}, {
+    versionKey: false,
+    timestamps: true,
+});
 
-const Contact = model("contact", contactSchema);
+contactSchema.post("save", handleMongeeseError);
 
-export default Contact;
+const addSchema = Joi.object({
+    name: Joi.string().required(),
+    email: Joi.string().required(),
+    phone: Joi.string().required(),
+  });
+
+  const updateFavoriteSchema = Joi.object({
+    favorite: Joi.boolean().required(),
+  })
+
+export const schemas = {
+    addSchema,
+    updateFavoriteSchema,
+}
+
+export const Contact = model("contact", contactSchema);
+
+// export default {
+//     Contact,
+//     schemas,
+// };
